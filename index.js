@@ -1,10 +1,11 @@
 // Dependencies
-var Google = require("googleapis");
+var Google = require("../google-api-nodejs-client/lib/googleapis.js");
 
 // Create YoutTube client
 var Client = module.exports = function(config) {};
 
-(function() {
+module.exports = function() {
+    var google = new Google();
     var config = {};
     /**
      * authenticate
@@ -24,7 +25,7 @@ var Client = module.exports = function(config) {};
         var authObj = null;
         switch (options.type) {
             case "oauth":
-                authObj = new  Google.auth.OAuth2();
+                authObj = new  google.auth.OAuth2();
                 authObj.setCredentials({
                     access_token: options.access_token || options.token
                   , refresh_token: options.refresh_token
@@ -34,7 +35,7 @@ var Client = module.exports = function(config) {};
                 authObj = options.key;
                 break;
             case "jwt":
-                authObj = new Google.auth.JWT(
+                authObj = new google.auth.JWT(
                     options.email
                   , options.keyFile
                   , options.key
@@ -44,7 +45,7 @@ var Client = module.exports = function(config) {};
                 break;
         }
 
-        Google.options({ auth: authObj });
+        google.options({ auth: authObj });
         config.auth = options;
 
         return authObj;
@@ -63,8 +64,8 @@ var Client = module.exports = function(config) {};
     };
 
     // Add Google YouTube API functions
-    var GoogleYoutube = Google.youtube("v3");
+    var GoogleYoutube = google.youtube("v3");
     for (var f in GoogleYoutube) {
         this[f] = GoogleYoutube[f];
     }
-}).call(Client);
+};
